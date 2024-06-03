@@ -2,73 +2,54 @@ const calculator = document.getElementById('calculator')
 const output = document.querySelector(".output")
 
 let operation = []
+const operators = ["/", "*", "+", "."] 
 
-const operators = ["/", "*", "+", "-"]
-
-//operation buttons 
-const operationFunction = (event) => {
-    console.log("ss");
-    if (event.target.innerText !== operation[operation.length - 1]) {
-        operation.push(event.target.innerText)
+calculator.addEventListener('click', (event) => {
+    //check double operator values && operator values cannot be at the beginning of a str
+    if (event.target.attributes.data?.value && operators.includes(event.target.attributes.data.value)) {
+        if (operation.length > 0 && !operators.includes(operation[operation.length - 1])){
+            operation.push(event.target.attributes.data.value)
+        } 
+        output.innerHTML = operation.join('')
     }
-    output.innerHTML = operation.join('')
-}
-
-//divide button 
-function divideFunction() {
-    operation.push(' / ')
-    output.innerHTML = operation.join('');
-}
-
-//equals button  
-function equalsFunction() {
-    let result = eval(operation.join(''))
-    output.innerHTML = result;
-    operation = [result]
-}
-
-//all clear button 
-function clearFunction() {
-    operation = []
-    output.innerHTML = operation.join('');
-}
-
-//delete button
-function deleteFunction() {
-    operation.pop();
-    output.innerHTML = operation.join('');
-}
-
-//operators 
-function removeDuplicateOperators() {
-    console.log(operation)
-    if (operation[operation.length - 1] === operation[operation.length - 2]) {
-        operation.pop()
+    //numbers 
+    if (event.target.attributes.data?.value == 'number'){
+        operation.push(event.target.innerHTML)
+        output.innerHTML = operation.join('')
     }
-    output.innerHTML = operation.join('');
-}
-
-calculator.addEventListener('click', (e) => {
-    console.log('>>> e', e)
-
-    if (e.target.attributes.data?.value && operators.includes(e.target.attributes.data.value)) {
-        console.log('>>> je to operator')
+    //minus operator 
+    if (event.target.attributes.data?.value == '-'){
+        //-- -> +
+        if (event.target.attributes.data.value == operation[operation.length - 1]){
+            operation.pop();
+            operation.push('+') 
+            output.innerHTML = operation.join('')
+        }
+        else {
+            operation.push(event.target.innerHTML)
+            output.innerHTML = operation.join('')
+        }
     }
+    //equals button
+    if (event.target.attributes.data?.value == 'equals'){ 
+        if (operators.includes(operation[operation.length - 1])){
+            operation.pop();
+            output.innerHTML = operation.join('');
+            let result = eval(operation.join(''))
+            output.innerHTML = result;
+            operation = [result]
+        } else {
+            let result = eval(operation.join(''))
+            output.innerHTML = result;
+            operation = [result]
+        }
+    }
+    //all clear button
+    if (event.target.attributes.data?.value == 'AC') 
+        operation = []
+        output.innerHTML = operation.join('');
+    //delete button
+    if (event.target.attributes.data?.value == 'delete') 
+        operation.pop();
+        output.innerHTML = operation.join('');
 })
-
-
-// na vysvetleni
-// calculator.addEventListener('click', (e) => operationFunction(e))
-// calculator.addEventListener('click', operationFunction)
-
-const func = (value, funcArg) => {
-    funcArg(value)
-}
-
-
-const func2 = (value) => {
-    console.log('>>> value', value)
-}
-
-func("click", func2)
-func("click", (e) => func2(e))
